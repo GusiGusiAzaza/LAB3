@@ -1,42 +1,56 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LAB3
 {
     public partial class Store
     {
-        public static int RevDiff(int rev)
+        public Store()
         {
-            if (rev < minRevenue) Console.WriteLine($"You need to increase revenue by {minRevenue - rev} $!!!");
-            else Console.WriteLine($"{rev - minRevenue}$ till you're bankrupt :)");
-            return (rev - minRevenue);
+            this.isOpen = false;
         }
-        public int Revenue
+        public Store(string name, bool isOpen, int stock, int revenue, int fruits, int vegetables)
         {
-            set
+            this.name = name;
+            this.isOpen = isOpen;
+            this.Stock = stock;
+            this.revenue = revenue;
+            this.Fruits = fruits;
+            this.Vegetables = vegetables;
+        }
+        static Store()
+        {
+            location = "Minsk";
+        }
+        public Store(Store previousStore)
+        {
+            isOpen = previousStore.isOpen;
+            Stock = previousStore.Stock;
+            revenue = previousStore.revenue;
+            Fruits = previousStore.Fruits;
+            Vegetables = previousStore.Vegetables;
+        }
+
+
+        public override string ToString()
+        {
+            return $"---------------------------\nStore: {name}\nLocation: {Store.location}.\nThe store is open: {isOpen}.\nThere are {Stock} units in stock.\n" +
+                $"Fruits: {Fruits}.\nVegetables: {Vegetables}\nThe revenue: {revenue}$ \n---------------------------\n";
+        }
+        public override int GetHashCode()
+        {
+            return ((Fruits * 27) + (Vegetables * 12) + (Stock * 13));
+        }
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || this.GetType() != obj.GetType())
             {
-                if (value < minRevenue)
-                {
-                    Console.WriteLine("Экономически не выгодно(выручка меньше 1000)");
-                }
-                else
-                {
-                    revenue = value;
-                }
+                return false;
             }
-            get { return revenue; }
-        }
-        public int MinRevenue
-        {
-            get { return minRevenue; }
-        }
-        public void ThrowVegies(ref int x)
-        {
-            vegetables = vegetables - x;
-            x = 0;
+            else
+            {
+                var s = (Store)obj;
+                return (isOpen == s.isOpen) && (Stock == s.Stock) && (Fruits == s.Fruits) && (Vegetables == s.Vegetables) && (isOpen == s.isOpen);
+            }
         }
 
 

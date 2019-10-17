@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 namespace LAB3
@@ -12,67 +8,52 @@ namespace LAB3
         [Required(ErrorMessage = "Name is required")]
         [StringLength(15, MinimumLength = 2)]
         public string name;
+        
         public bool isOpen;
-        private int revenue { get; set; }
+        private int revenue;
+        
         [Required(ErrorMessage = "Stock space is required")]
         [Range(0, 10000000)]
-        public int stock { get; set; }
+        public int Stock { get; set; }
+        
         [Range(0, 5000)]
-        public int fruits { get; set; }
+        public int Fruits { get; }
+        
         [Range(0, 10000)]
-        public int vegetables { get; set; }
+        public int Vegetables { get; set; }
         public static string location;
         private static int minRevenue = 1000;
         
-        public Store()
-        {
-            this.isOpen = false;
-        }
-        public Store(string name, bool isOpen, int stock, int revenue, int fruits, int vegetables)
-        {
-            this.name = name;
-            this.isOpen = isOpen;
-            this.stock = stock;
-            this.revenue = revenue;      
-            this.fruits = fruits;
-            this.vegetables = vegetables;
-        }
-        static Store()
-        {
-            location = "Minsk";
-        }
-        public Store(Store previousStore)
-        {
-            isOpen = previousStore.isOpen;
-            stock = previousStore.stock;
-            revenue = previousStore.revenue;
-            fruits = previousStore.fruits;
-            vegetables = previousStore.vegetables;
-        }
 
-        public override string ToString()
+        public static int RevDiff(int rev)
         {
-            return $"---------------------------\nStore: {name}\nLocation: {Store.location}.\nThe store is open: {isOpen}.\nThere are {stock} units in stock.\n" +
-                $"Fruits: {fruits}.\nVegetables: {vegetables}\nThe revenue: {revenue}$ \n---------------------------\n";
+            if (rev < minRevenue) Console.WriteLine($"You need to increase revenue by {minRevenue - rev} $!!!");
+            else Console.WriteLine($"{rev - minRevenue}$ till you're bankrupt :)");
+            return (rev - minRevenue);
         }
-        public override int GetHashCode()
+        public int Revenue
         {
-            return ((fruits * 27) + (vegetables * 12) + (stock * 13));
-        }
-        public override bool Equals(object obj)
-        {
-            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            set
             {
-                return false;
+                if (value < minRevenue)
+                {
+                    Console.WriteLine("Экономически не выгодно(выручка меньше 1000)");
+                }
+                else
+                {
+                    revenue = value;
+                }
             }
-            else
-            {
-                Store s = (Store)obj;
-                return (isOpen == s.isOpen) && (stock == s.stock) && (fruits == s.fruits) && (vegetables == s.vegetables) && (isOpen == s.isOpen);
-            }
+            get { return revenue; }
         }
-
-
- 
+        public int MinRevenue
+        {
+            get { return minRevenue; }
+        }
+        public void ThrowVegies(ref int x)
+        {
+            Vegetables = Vegetables - x;
+            x = 0;
+        }
     }
 }

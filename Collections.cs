@@ -1,45 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LAB3
 {
      public class StoreCollection : IEnumerable, IEnumerator
-    {
+     {
+        private static StoreCollection instance;
+
+        private StoreCollection()
+        { }
+
+        public static StoreCollection getInstance()
+        {
+            if (instance == null)
+                instance = new StoreCollection();
+            return instance;
+        }
+
         readonly List<Store> stores = new List<Store>();
-        private int size = 0;
-       
+        private int size = 0;   
         public Store this[int index]
         {
-            get { return stores[index]; }
+            get
+            {
+                if (index <= this.size && index >= 0) return stores[index];
+                Console.WriteLine($"Введён некорректный индекс({index})");
+                return null;
+            }
             set { stores[index] = value;}
         }
-        private int position = -1;
+        private int _position = -1;
         bool IEnumerator.MoveNext()
         {
-            if (position < stores.Count - 1)
+            if (_position < stores.Count - 1)
             {
-                position++;
+                _position++;
                 return true;
             }
             return false;
         }
         void IEnumerator.Reset()
         {
-            position = -1;
+            _position = -1;
         }
-        object IEnumerator.Current => stores[position];
+        object IEnumerator.Current => stores[_position];
         IEnumerator IEnumerable.GetEnumerator()
         {
             return (IEnumerator)this;
         }
-        
 
         public void Add(Store store)
         {
+            if (this.IsThere(store.name))
+            {
+                Console.WriteLine($"Магазин с именем \"{store.name}\" уже находится в коллекции");
+                return;
+            }
             stores.Add(store);
             size++;
         }
@@ -64,30 +81,48 @@ namespace LAB3
         public bool IsThere(string name)
         {
             //name = name.ToLower();
-            for (int i = 0; i < stores.Count; i++)
+            foreach (Store t in this.stores)
             {
-                if (stores[i].name == name)
+                if (t.name == name)
                 {
                     return true;
                 };
             }
             return false;
         }
+        public StoreCollection Unite(StoreCollection coll)
+        {
+            StoreCollection united = new StoreCollection();
+            foreach (Store item in this)
+            {
+                united.Add(item);
+            }
+            foreach (Store item in coll)
+            {
+                if (!this.IsThere(item.name))
+                    united.Add(item);
+            }
+            return united;
+        }
 
 
         public override string ToString()
         {
-            string str = "Список магазинов:\n";
+            string str = $"\nСписок магазинов в коллекции:\n";
             foreach (var item in stores) str += $"-{item.name}\n";
             return str;
         }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
         public override bool Equals(object obj)
         {
-            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            if ((obj == null) || this.GetType() != obj.GetType())
             {
                 return false;
             }
-            StoreCollection s = (StoreCollection)obj;
+            var s = (StoreCollection)obj;
             if (s.stores.Count != stores.Count) return false;
             else
             {
@@ -101,5 +136,5 @@ namespace LAB3
                 return (x1 == x2);
             }
         }
-    }
+     }
 }
